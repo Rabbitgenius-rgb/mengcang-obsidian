@@ -1,0 +1,9 @@
+{
+  "id": "mengcang-dashboard",
+  "name": "梦藏 Dashboard",
+  "version": "0.1.14",
+  "minAppVersion": "1.10.0",
+  "description": "A read-only native dashboard for the Personal AIOS material archive.",
+  "author": "Rabbit",
+  "isDesktopOnly": false
+}
