@@ -16,8 +16,10 @@ jobs:
   desktop-regression:
     name: Desktop build and regression
     # The helper targets arm64 and the native tests execute that helper.
-    # macos-15 is GitHub's standard Apple Silicon runner (not macos-15-intel).
-    runs-on: macos-15
+    # The first macos-15 image lacked the required Chinese sentence model.
+    # Keep the native capability assertion; validate on the current stable image.
+    # This runner selection is not a claim about the minimum supported macOS.
+    runs-on: macos-26
     timeout-minutes: 30
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
