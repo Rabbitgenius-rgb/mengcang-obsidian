@@ -1,0 +1,27 @@
+{
+  "name": "mengcang-obsidian",
+  "private": true,
+  "version": "0.8.7",
+  "description": "Local-first Obsidian material archive and human-confirmed relation explorer.",
+  "scripts": {
+    "build": "npm run desktop:build",
+    "check": "for file in desktop/*.cjs src/desktop-connector/*.js scripts/*.cjs scripts/*.mjs; do [ ! -f \"$file\" ] || node --check \"$file\" || exit 1; done",
+    "test": "npm run test:desktop",
+    "desktop:build": "node scripts/build-attachment-validation.mjs && node scripts/build-desktop.mjs",
+    "desktop:package": "node scripts/package-desktop.mjs",
+    "desktop:start": "electron desktop/build/app",
+    "test:root": "node --test --test-concurrency=1 tests/*.test.js",
+    "test:desktop": "npm run test:root && npm --prefix prototypes/desktop-workbench test"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "44.4.5",
+    "esbuild": "0.25.12"
+  },
+  "dependencies": {
+    "playwright": "1.62.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "yaml": "2.9.1"
+  }
+}

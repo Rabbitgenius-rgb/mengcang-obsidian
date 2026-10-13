@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title description">
+  <title id="title">演示占位图</title>
+  <desc id="description">项目自有的示例图形，不代表真实资料、书籍封面或用户文件。</desc>
+  <rect width="640" height="420" rx="20" fill="#eef1ef"/>
+  <rect x="32" y="32" width="576" height="356" rx="14" fill="none" stroke="#c7d0ca" stroke-width="2" stroke-dasharray="8 8"/>
+  <rect x="275" y="86" width="90" height="72" rx="12" fill="#d6e1db"/>
+  <path d="M292 142l18-22 14 14 11-12 15 20" fill="none" stroke="#6c8375" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="341" cy="106" r="6" fill="#6c8375"/>
+  <text x="320" y="224" text-anchor="middle" fill="#465b4f" font-family="system-ui,sans-serif" font-size="42" font-weight="600">演示占位图</text>
+  <text x="320" y="270" text-anchor="middle" fill="#66796d" font-family="system-ui,sans-serif" font-size="24">不代表真实资料</text>
+</svg>
