@@ -1,0 +1,16 @@
+{
+  "generator": "tests/fixtures/generate-ocr-fixture.cjs",
+  "background": "white",
+  "containsUserMaterial": false,
+  "font": "Helvetica-Bold",
+  "fontSize": 64,
+  "foreground": "black",
+  "height": 420,
+  "lines": [
+    "SYNTHETIC OCR FIXTURE",
+    "VISIBLE TEXT ONLY 2026"
+  ],
+  "platform": "macOS AppKit",
+  "width": 1600,
+  "sha256": "da04ad48c00fe98a05170abd833e6f5243f45f084d7d8c8fb5a1a0960ce73b33"
+}

@@ -1,2 +1,27 @@
 .DS_Store
 *.log
+.env
+.env.*
+node_modules/
+dist/
+coverage/
+qa/
+artifacts/
+backups/
+.desktop-private/
+data.json
+*.zip
+*.webm
+*.mp4
+*.mov
+# Generated native/desktop output and optional local transcription runtime.
+desktop/build/
+desktop/discovery-helper
+desktop/.discovery-helper-*.tmp
+desktop/local-transcription/ffmpeg
+desktop/local-transcription/whisper-cli
+desktop/local-transcription/model.bin
+desktop/local-transcription/*.tar.*
+# Personal exports and generated design reference boards.
+prototypes/desktop-workbench/public/references/
+desktop/candidate-config.json

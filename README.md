@@ -1,56 +1,51 @@
-# 梦藏
+# 梦藏：独立桌面源码试点
 
-梦藏（Mengcang）是一款运行在 Obsidian 中的本地创作素材档案插件。它直接读取 Vault 中已有的 Markdown，把图案、图书、文本灵感与网页剪报整理为可浏览、可检索、可回到原始资料的私人数字藏馆。
+本分支把当前独立 Electron 桌面端、共享渲染器和对应测试纳入版本控制，并建立可复现的构建与回归入口。桌面源码版本由根 `package.json` 提供。
 
-当前版本：`0.1.14`
+根目录原有 `main.js`、`manifest.json`、`versions.json`、`styles.css` 和 `assets/` 是历史 Obsidian 插件发布文件，本次保持原提交内容；它们不表示当前桌面软件的版本或发布状态。未把旧插件的书籍策展页面、图像资源和专项功能测试纳入本次桌面试点。
 
-## 主要能力
+## 范围
 
-- 梦藏总览：统一浏览四类本地素材，并按标题、标签、正文或来源搜索。
-- 图案收集：使用“专题图鉴 → 二级样架 → 具体作品”的层级组织视觉资料。
-- 图书书架：按阅读状态筛选书籍，通过悬浮卡查看简介、进度、笔记入口与本地 PDF。
-- 文本档案：区分待整理灵感与主题目录，并支持按项目筛选完整灵感集合。
-- 网页档案：保存网页预览、来源与设计观察。
-- Canvas 联动：可将真实文本卡片拖入 Obsidian Canvas，并优先显示正文段落。
+- Electron 主进程及本机资料接口：`desktop/`。
+- 共享的资料格式与写入校验：`src/desktop-connector/`。
+- 桌面渲染器与浏览器演示：`prototypes/desktop-workbench/`。目录名保留为历史路径，桌面构建使用其中的真实源码。
+- 桌面及共享协议测试：`tests/`；渲染器与 Sites 适配测试：`prototypes/desktop-workbench/tests/`。
+- 构建脚本：`scripts/`；自动检查：`.github/workflows/desktop-ci.yml`。
 
-## 设计原则
+没有纳入个人资料库、备份、缓存、日志、录音、真实 AI 密钥、已安装应用、预览参考板或大转录模型。测试资料为合成夹具。原生 OCR 测试使用仓库内可复现生成的文字图。
 
-- 本地优先：资料保留在用户自己的 Obsidian Vault 中。
-- Markdown 为唯一真源：插件不建立第二套封闭数据库。
-- 当前界面只读：浏览与重组不会静默修改原始笔记。
-- 来源可追溯：素材卡片可以返回对应 Markdown、网页或本地文件。
+## 从干净检出验证
 
-## 当前状态
+当前原生组件面向 **macOS Apple Silicon（arm64）**，需要 Xcode Command Line Tools/macOS SDK、Swift 和 Node.js 24。原生回归还要求系统实际提供中文及英文句向量模型。`macos-15` 和 `macos-26` runner 的中文能力均不可用，测试正确失败，相关断言保留。
 
-这是面向桌面端体验开发和验证的早期版本。快速捕捉、AI 整理、网页自动抓取、Canvas 连线同步到关系图谱等能力尚未实现。
+试点 CI 使用 `macos-26` arm64 镜像。构建后通过 Apple 公开的 `NLTagger.requestAssets` 请求可选中文语言资源，再在新进程中验证真实的中英文句向量并记录模型版本、维度。该准备步骤可能从 Apple 下载系统模型，仅在 CI 或开发者明确执行时运行，应用不会自动调用它。Tagger 下载成功不等于句向量可用；真实向量检查及原完整回归必须同时通过，模型缺失仍然失败。该选择不构成最低系统版本或所有 macOS 环境兼容性承诺，具体能力以运行时检测为准。这里只构建资源并测试，不安装或启动应用。
 
-插件当前使用以下 Vault 目录约定：
-
-```text
-01_sources/books/
-01_sources/cards/images/patterns/
-01_sources/cards/text/
-01_sources/cards/web/
+```sh
+npm ci --ignore-scripts --no-audit --no-fund
+npm ci --ignore-scripts --no-audit --no-fund --prefix prototypes/desktop-workbench
+npm run check
+npm run desktop:build
+swift scripts/prepare-native-language-assets.swift
+node scripts/check-native-capabilities.mjs
+npm run test:desktop
 ```
 
-相关 Markdown 通过 Frontmatter 中的 `type`、`status`、`title`、`cover`、`captured_at` 等字段被识别。图书记录使用 `type: book`，其他素材使用 `type: material`。
+`desktop:build` 生成附件校验模块、完整渲染器/Sites 产物和原生 helper，组装 `desktop/build/app/` 后验证输出依赖、入口资源及许可证。`test:desktop` 执行仓库中全部根测试和工作台测试，没有按失败结果跳过测试。需要先构建，因为 Sites 和原生能力测试使用真实构建输出。
 
-## 手动安装
+`npm test` 是同一回归入口。`npm run build` 是桌面构建别名。单独运行 `test:root` 或工作台测试仅验证相应部分。历史本机工作区还有未导入的旧插件测试；本流程不声称覆盖这些功能。
 
-1. 在 Vault 的 `.obsidian/plugins/` 下建立 `mengcang-dashboard` 文件夹。
-2. 将仓库中的 `main.js`、`manifest.json`、`styles.css` 和 `assets/` 复制到该文件夹。
-3. 在 Obsidian 的“第三方插件”设置中启用“梦藏 Dashboard”。
-4. 点击左侧功能区的档案图标，或在命令面板运行“打开梦藏总览”。
+## 资料与 AI
 
-## 文件说明
+未配置资料库时，不应猜测或读取开发者电脑上的目录；本机工作区仍可使用。资料库路径需明确配置，现有资料保持只读，写入只在用户提交相应操作后进行。开发调试时可在生成的 `desktop/build/app/candidate-config.json` 中明确设置 `vaultPath` 为合成测试资料目录的绝对路径；不配置时使用空本地工作区。该文件不入 Git，每次重新构建会清除；不要把真实目录写入源码。
 
-```text
-main.js       插件逻辑
-styles.css    梦藏界面与交互样式
-manifest.json Obsidian 插件清单
-assets/       品牌标记与界面纹理
-```
+AI 默认关闭，实际生成或转录须逐次确认；自动测试使用模拟服务或合成资料，不执行真实收费请求。密钥只由应用本机加密设置管理，不写入源码、日志或备份。
 
-## 说明
+## 构建证据的边界
 
-仓库目前未附加开源许可证。未经明确许可，不视为授予复制、修改或再发布权利。
+CI 检查当前源码的资源构建与回归。它不替代原生 UI、真实文件保存及重启读回检查，也不证明完整安装包或正式发布已验收。涉及这些行为的改动需使用隔离资料库补充对应验证。
+
+`desktop:package` 仍需要另外准备经核对的 Whisper/FFmpeg 运行时和模型；这些大文件不随 Git 分发。本次 CI 不打包、签名、安装或分发应用。工作台的 Sites 适配仅供构建和测试，不会自动发布网站。
+
+## PR 流程
+
+从明确任务和验收条件开始，在独立分支修改，先运行相关检查，再提交 Draft PR。独立审查需核对具体 diff、调用方、失败路径及测试判别力；修复后按当前提交重新验证。检查通过只表示相应证据成立，正式审批、合并与发布分别处理。工作流已配置不等于主分支已经强制执行合并规则。
