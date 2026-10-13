@@ -16,9 +16,9 @@ jobs:
   desktop-regression:
     name: Desktop build and regression
     # The helper targets arm64 and the native tests execute that helper.
-    # The first macos-15 image lacked the required Chinese sentence model.
-    # Keep the native capability assertion; validate on the current stable image.
-    # This runner selection is not a claim about the minimum supported macOS.
+    # The tested macos-15/macOS-26 images lacked Chinese sentence models. Prepare
+    # explicitly and require actual sentence vectors before the full regression.
+    # This runner selection is not a minimum-OS compatibility guarantee.
     runs-on: macos-26
     timeout-minutes: 30
     env:
@@ -42,5 +42,10 @@ jobs:
         run: npm ci --prefix prototypes/desktop-workbench --ignore-scripts --no-audit --no-fund
       - name: Build and verify desktop resources
         run: npm run desktop:build
+      - name: Prepare optional native Chinese language assets
+        timeout-minutes: 6
+        run: swift scripts/prepare-native-language-assets.swift
+      - name: Verify real Chinese and English sentence vectors
+        run: node scripts/check-native-capabilities.mjs
       - name: Run desktop regression tests
         run: npm run test:desktop

@@ -16,13 +16,17 @@
 
 ## 从干净检出验证
 
-当前原生组件面向 **macOS Apple Silicon（arm64）**，需要 Xcode Command Line Tools/macOS SDK、Swift 和 Node.js 24。CI 使用 `macos-26` arm64 镜像；原生回归还要求系统实际提供中文句向量模型。首轮 `macos-15` runner 缺少该能力，测试正确失败，相关断言保留。CI 镜像选择不构成最低系统版本承诺，具体能力以运行时检测为准。这里只构建资源并测试，不安装或启动应用。
+当前原生组件面向 **macOS Apple Silicon（arm64）**，需要 Xcode Command Line Tools/macOS SDK、Swift 和 Node.js 24。原生回归还要求系统实际提供中文及英文句向量模型。`macos-15` 和 `macos-26` runner 的中文能力均不可用，测试正确失败，相关断言保留。
+
+试点 CI 使用 `macos-26` arm64 镜像。构建后通过 Apple 公开的 `NLTagger.requestAssets` 请求可选中文语言资源，再在新进程中验证真实的中英文句向量并记录模型版本、维度。该准备步骤可能从 Apple 下载系统模型，仅在 CI 或开发者明确执行时运行，应用不会自动调用它。Tagger 下载成功不等于句向量可用；真实向量检查及原完整回归必须同时通过，模型缺失仍然失败。该选择不构成最低系统版本或所有 macOS 环境兼容性承诺，具体能力以运行时检测为准。这里只构建资源并测试，不安装或启动应用。
 
 ```sh
 npm ci --ignore-scripts --no-audit --no-fund
 npm ci --ignore-scripts --no-audit --no-fund --prefix prototypes/desktop-workbench
 npm run check
 npm run desktop:build
+swift scripts/prepare-native-language-assets.swift
+node scripts/check-native-capabilities.mjs
 npm run test:desktop
 ```
 
